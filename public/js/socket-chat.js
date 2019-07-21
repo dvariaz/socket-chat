@@ -1,7 +1,3 @@
-var socket = io();
-
-var params = new URLSearchParams(window.location.search);
-
 if(!params.has('name') || !params.has('room')){
     window.location = 'index.html';
     throw new Error('El nombre y sala son necesarios');
@@ -17,6 +13,7 @@ socket.on('connect', function() {
 
     socket.emit('enterChat', user, function(res){
         console.log('Usuarios conectados', res);
+        renderUsers(res);
     });
 });
 
@@ -25,24 +22,16 @@ socket.on('disconnect', function() {
     console.log('Perdimos conexión con el servidor');
 });
 
-
-// Enviar información
-// socket.emit('sendMessage', {
-//     usuario: 'Fernando',
-//     mensaje: 'Hola Mundo'
-// }, function(resp) {
-//     console.log('respuesta server: ', resp);
-// });
-
 // Escuchar información
 socket.on('sendMessage', function(msg) {
-
-    console.log('Servidor:', msg);
-
+    // console.log('Servidor:', msg);
+    renderMessages(msg, false);
+    scrollBotom();
 });
 
 socket.on('usersList', function(users) {
     console.log(users);
+    renderUsers(users);
 });
 
 //Mensajes privados

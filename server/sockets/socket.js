@@ -20,16 +20,19 @@ io.on('connection', (client) => {
         let newUsers = users.addUser( client.id, data.name, data.room );
         
         client.broadcast.to(data.room).emit('usersList', users.getUsersByRoom(data.room));
+        client.broadcast.to(data.room).emit('sendMessage', sendMessage('Administrador', `${ data.name } entro a la sala`) );
 
         callback(users.getUsersByRoom(data.room));
         //console.log(newUsers);
     });
 
-    client.on('sendMessage', (data) => {
+    client.on('sendMessage', (data, callback) => {
+        //console.log(data);
         let user = users.getUser(client.id);
         let msg = sendMessage(user.name, data.msg);
         
         client.broadcast.to(user.room).emit('sendMessage', msg);
+        callback(msg);
     });
 
     client.on('disconnect', () => {
